@@ -17,15 +17,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Generate fresh signing keystore
+      - name: Ensure signing.properties absent (use debug keystore)
         run: |
           rm -f signing.properties key.jks
-          keytool -genkeypair -v -keystore key.jks -storetype JKS \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias swiggy -storepass swiggy123 -keypass swiggy123 \
-            -dname "CN=Swiggy, OU=Dev, O=Swiggy, L=Delhi, S=Delhi, C=IN"
-          printf "KEYSTORE_FILE=key.jks\nKEYSTORE_PASSWORD=swiggy123\nKEYSTORE_ALIAS=swiggy\nKEYSTORE_ALIAS_PASSWORD=swiggy123\n" > signing.properties
-          ls -la key.jks signing.properties
+          # Create default debug keystore if AGP doesn't
+          mkdir -p ~/.android
+          if [ ! -f ~/.android/debug.keystore ]; then
+            keytool -genkeypair -v -keystore ~/.android/debug.keystore \
+              -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 \
+              -alias androiddebugkey -storepass android -keypass android \
+              -dname "CN=Android Debug, O=Android, C=US"
+          fi
+          ls -la ~/.android/
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
