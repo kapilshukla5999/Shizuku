@@ -31,10 +31,10 @@ android {
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.sign
+            signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.sign
+            signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             vcsInfo.include false
